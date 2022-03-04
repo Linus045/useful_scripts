@@ -1,0 +1,11 @@
+[Unit]
+Description=User resume actions
+After=hibernate.target
+
+[Service]
+User=%I
+Type=simple
+ExecStart=echo "Resumed!"
+
+[Install]
+WantedBy=hibernate.target

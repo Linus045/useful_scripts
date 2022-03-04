@@ -1,0 +1,7 @@
+[Unit]
+Description=Check battery and hibernate if below threshold
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /home/linus/.low_battery_checker.sh
+User=linus

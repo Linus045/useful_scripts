@@ -1,0 +1,14 @@
+[Unit]
+Description=User suspend actions
+Before=hibernate.target
+
+[Service]
+User=%I
+Type=forking
+Environment=DISPLAY=:0
+# ExecStartPre=dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Pause
+ExecStart=/bin/i3lock -i /home/linus/.i3lock_image.png -t "Enter Password to Unlock"
+ExecStartPost=/usr/bin/sleep 1
+
+[Install]
+WantedBy=hibernate.target
