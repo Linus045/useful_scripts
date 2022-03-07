@@ -1,3 +1,4 @@
+# See https://wiki.archlinux.org/title/Power_management#Sleep_hooks
 [Unit]
 Description=User resume actions
 After=hibernate.target
