@@ -1,0 +1,10 @@
+# set rule, reload udev rules and then trigger:
+# sudo udevadm control --reload
+# sudo udevadm trigger --verbose --action=add --attr-match="name=Logitech G502 HERO Gaming Mouse"
+#ACTION=="add", ATTRS{name}=="Logitech G502 HERO Gaming Mouse", ENV{XAUTHORITY}="/home/linus/.Xauthority", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/notify-send working'"
+
+#send dnotify message when screen gets connected
+#ACTION=="change", KERNEL=="card0", SUBSYSTEM=="drm", ENV{XAUTHORITY}="/home/linus/.Xauthority", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/notify-send working screen!!!'"
+
+#run script to enable/disable screen
+ACTION=="change", KERNEL=="card0", SUBSYSTEM=="drm", ENV{XAUTHORITY}="/home/linus/.Xauthority", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/sh /home/linus/dotfiles/polybar/.config/polybar/scripts/multi_screen_selector.sh"
