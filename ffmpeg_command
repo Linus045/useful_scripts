@@ -1,0 +1,8 @@
+
+
+# Encodes mkv file, -map selects the specific stream input 
+- 0:v:0 is first video stream
+- 0:a:4 is the 4th audio stream
+- 0:s:7 is the 7th subtitle stream
+- 0:s:8 is the 8th subtitle stream
+ffmpeg -i ./uncompressed/Dune_\(2021\)/Dune_\(2021\).mkv -map 0:v:0 -vcodec libx265 -crf 24 -preset veryslow -map 0:a:4 -acodec aac -map 0:s:7 -scodec copy -map 0:s:8 -scodec copy ./compressed/Dune_2021_compressed.mkv
