@@ -1,0 +1,17 @@
+/* 
+ * Log polkit messages. See journalctl -fu polkit.service
+ * Also remove the --no-debug in /usr/lib/systemd/system/polkit.service ExecStart 
+ */
+polkit.addRule(function(action, subject) {
+    polkit.log("action=" + action);
+    polkit.log("subject=" + subject);
+});
+
+
+/* Allow wheel users to mount/umount drives via udisks2 */
+polkit.addRule(function(action, subject) {
+  if(action.id.indexOf("org.freedesktop.udisks2.") == 0 && subject.isInGroup("wheel")) {
+  polkit.log("RETURNING YES" + polkit.Result.YES);
+	return polkit.Result.YES
+  }
+});
