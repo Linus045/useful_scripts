@@ -9,4 +9,4 @@
 
 # ln -s /home/linus/useful_scripts/90-tablet.rules /etc/udev/rules.d/90-tablet.rules
 #run script to enable/disable screen
-ACTION=="add", KERNEL=="js0", SUBSYSTEM=="input", ATTRS{id/product}=="006e", ATTRS{id/vendor}=="256c", ,ENV{XAUTHORITY}="/home/linus/.Xauthority", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/sh /home/linus/useful_scripts/.xsetwacom.sh'"
+ACTION=="add", KERNEL=="js0", SUBSYSTEM=="input", ATTRS{id/product}=="006e", ATTRS{id/vendor}=="256c", ,ENV{XAUTHORITY}="/home/linus/.Xauthority", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/sh $USEFUL_SCRIPTS/.xsetwacom.sh'"
