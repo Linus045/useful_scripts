@@ -1,11 +1,11 @@
 #!/bin/sh
 
-
+# xsetwacom --list devices 
 # ⎜   ↳ HID 256c:006e stylus                    	id=23	[slave  pointer  (2)]
 # ⎜   ↳ HID 256c:006e Pad pad                   	id=24	[slave  pointer  (2)]
 # ⎜   ↳ HID 256c:006e Touch Strip pad           	id=25	[slave  pointer  (2)]
 PAD="HID 256c:006e Pad pad"
-STYLUS="HID 256c:006e stylus"
+STYLUS="HID 256c:006e Pen stylus"
 STRIP="HID 256c:006e Touch Strip pad"
 
 
