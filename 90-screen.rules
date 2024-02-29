@@ -7,4 +7,4 @@
 #ACTION=="change", KERNEL=="card0", SUBSYSTEM=="drm", ENV{XAUTHORITY}="/home/linus/.Xauthority", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/notify-send working screen!!!'"
 
 #run script to enable/disable screen
-ACTION=="change", KERNEL=="card0", SUBSYSTEM=="drm", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/bash /home/linus/dotfiles/polybar/.config/polybar/scripts/multi_screen_selector.sh"
+ACTION=="change", KERNEL=="card1", SUBSYSTEM=="drm", ENV{DISPLAY}=":0", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su linus -c '/usr/bin/bash /home/linus/dev/dotfiles/polybar/.config/polybar/scripts/multi_screen_selector.sh"

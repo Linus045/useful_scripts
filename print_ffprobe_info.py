@@ -7,6 +7,16 @@ import re
 # log output to a file called ffprobe_info.txt
 # print output to screen
 
+# USAGE:
+# this file generates stream_selections.txt file that is used by the extract_streams.py script
+# extract_streams.py will copy the mkv/avi/mp4 file and only keep the selected LANGUAGES_TO_INCLUDE which are defined in the
+# generated stream_selections.txt file
+
+# To run use:
+# python3 print_ffprobe_info.py <file/directory>
+# python3 extract_streams.py -f stream_selections.txt
+
+
 LANGUAGES_TO_INCLUDE = ["eng", "ger", "deu", "jpn"]
 
 
@@ -59,10 +69,13 @@ def parse_ffprobe_info(info : str):
     video_streams = []
     subtitle_streams = []
     unknown_streams = []
+    picture_streams = []
     for line in lines:
         if re.search(r"^\s+Stream #\d+:", line):
             if "Audio" in line:
                 audio_streams.append(line)
+            elif "Video: mjpeg" in line:
+                picture_streams.append(line)
             elif "Video" in line:
                 video_streams.append(line)
             elif "Subtitle" in line:
@@ -73,6 +86,7 @@ def parse_ffprobe_info(info : str):
         "audio": audio_streams,
         "video": video_streams,
         "subtitle": subtitle_streams,
+        "picture": picture_streams,
         "unknown": unknown_streams
     }
 
@@ -168,16 +182,30 @@ def get_included_stream_indexes(info):
                 print_color("WARNING: No language found for stream:", "orange")
                 print_color(line, "orange")
             elif language in LANGUAGES_TO_INCLUDE:
-                stream_indexes.append(index)
+                if stream_type == "Audio":
+                    stream_indexes.append(f"{index}#audio")
+                elif stream_type == "Subtitle":
+                    stream_indexes.append(f"{index}#subtitle")
+                elif stream_type == "Video":
+                    # ignore will be handle later
+                    pass
+                else:
+                    print("Unknown stream type:", stream_type)
+                    stream_indexes.append(f"{index}#unknown")
     
-    video_streams = parse_ffprobe_info(info)["video"]
+    streams = parse_ffprobe_info(info)
+    video_streams = streams["video"]
     video_stream_count = len(video_streams)
     if video_stream_count == 1:
         index, language, stream_type = get_stream_metadata(video_streams[0])
         if index not in stream_indexes:
             print_color("Note: Added only available video stream:", "orange")
             print_color(video_streams[0], "orange")
-            stream_indexes.append(index)
+            stream_indexes.append(f"{index}#video")
+
+    for picture_stream in streams["picture"]:
+        index, language, stream_type = get_stream_metadata(picture_stream)
+        stream_indexes.append(f"{index}#attachment")
         
     return stream_indexes
 
@@ -205,9 +233,9 @@ def request_streams(file):
     print("Audio Missing:", audio_missing)
     print("Subtitles Missing:", subtitle_missing)
     print("Video Missing:", video_missing)
-    if audio_missing or subtitle_missing or video_missing:
+    if audio_missing or subtitle_missing or video_missing or (len(streams["unknown"]) > 0):
         print(file)
-        print("Missing audio, subtitle, or video in included format")
+        print("Unknown streams found or missing audio, subtitle, or video in included format")
         print("Please enter the stream indexes to include in the output")
 
         print_ffprobe_info(file, info)
@@ -291,8 +319,8 @@ def request_streams(file):
                         continue
                     indexes.remove(index)
 
-        print("Including all valid streams")
-        print(indexes)
+        # print("Including all valid streams")
+        # print(indexes)
         return indexes
 
 if __name__ == "__main__":

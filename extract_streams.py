@@ -6,6 +6,9 @@ import io
 import shutil
 
 
+# use print_ffprobe_info.py first
+# see beginning of that file for instructions
+
 def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description='Extract streams from videos. Use "print_ffprobe_info.py" beforehand to create the stream_selection.txt file.')
@@ -17,10 +20,10 @@ def parse_args():
 def parse_stream_info_file(stream_info_file):
     # File Format:
     # <path>:<stream indexes>
-    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E02.mkv:0,5,7
-    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E07.mkv:0,5,7
-    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E05.mkv:0,5,7
-    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E03.mkv:0,5,7
+    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E02.mkv:0#video,5#audio,7#subtitle,9#attachment
+    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E07.mkv:0#video,5#audio,7#subtitle,9#attachment
+    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E05.mkv:0#video,5#audio,7#subtitle,9#attachment
+    # /mnt/HDD/Silicon_Valley/Silicon_Valley_S02/Silicon.Valley.S02E03.mkv:0#video,5#audio,7#subtitle,9#attachment
 
     with open(stream_info_file, 'r') as f:
         lines = f.readlines()
@@ -30,7 +33,7 @@ def parse_stream_info_file(stream_info_file):
         if line:
             path, stream_indexes = line.split(':')
             stream_indexes = stream_indexes.split(',')
-            stream_indexes = [int(i) for i in stream_indexes]
+            stream_indexes = [(int(line.split("#")[0]), line.split("#")[1]) for line in stream_indexes]
             streams.append((path, stream_indexes))
 
     return streams
@@ -51,9 +54,21 @@ def run_ffmpeg(file, stream_indexes) -> subprocess.Popen:
 
     # for each index generate a string of the form "-map 0:<index>"
     stream_indexes_params = []
-    for index in stream_indexes:
+    for (index,stream_type) in stream_indexes:
         stream_indexes_params.append("-map")
-        stream_indexes_params.append("0:" + str(index))
+        if stream_type == "attachment":
+            stream_indexes_params.append(f"0:{index}")
+        else:
+            stream_indexes_params.append(f"0:{index}")
+
+
+
+    # stream_indexes_params.append("-map")
+    # stream_indexes_params.append(f"0")
+    
+    # copy all attachments
+    stream_indexes_params.append("-map")
+    stream_indexes_params.append(f"0:t?")
 
     # ffmpeg -i <input file> -map 0:<stream index> -c:v copy -c:a copy -c:s copy <output file>
     parameter = [
@@ -80,9 +95,10 @@ if __name__ == "__main__":
 
     DELETE_AFTER_CONVERSION = args.delete
     print("DELETE_AFTER_CONVERSION: " + str(DELETE_AFTER_CONVERSION))
-    choice = input(f"Deleting files after conversion, are you sure? (y/N): ")
-    if choice != "y":
-        return
+    if DELETE_AFTER_CONVERSION:
+        choice = input(f"Deleting files after conversion, are you sure? (y/N): ")
+        if choice != "y":
+            exit(1)
 
     stream_info_file = args.file
     if not os.path.exists(stream_info_file):

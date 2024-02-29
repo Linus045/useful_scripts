@@ -16,7 +16,7 @@ sleep 2
 # gets the name of the first monitor containing HDMI 
 # reverse the string, cut by spaces, grab first element and reverse string again to get the name of the first connected monitor
 MAIN_MONITOR=$(xrandr --listactivemonitors | grep HDMI | rev | cut -d' ' -f1 | rev)
-if [[ -n $MAIN_MONITOR ]]; then
+if [[ -z $MAIN_MONITOR ]]; then
   # grab first monitor you can find if no hdmi monitor is connected
   # print only second line
   # reverse the string, cut by spaces, grab first element and reverse string again to get the name of the first connected monitor
@@ -47,4 +47,4 @@ xsetwacom set "$PAD" "Button" "16" "" # Button 12
 # what is this button?
 xsetwacom set "$PAD" "Button" "17" "button" # Button 13
 
-notify-send --icon /usr/share/icons/gnome/256x256/devices/input-tablet.png Touchpad 'Touchpad configured!'
+notify-send --icon /usr/share/icons/gnome/256x256/devices/input-tablet.png Touchpad "Touchpad configured! Monitor: $MAIN_MONITOR"
