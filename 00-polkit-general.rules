@@ -16,3 +16,12 @@ polkit.addRule(function(action, subject) {
 	return polkit.Result.YES
   }
 });
+
+/* Allow wheel users to use libvirt */
+polkit.addRule(function(action, subject) {
+  if(action.id.indexOf("org.libvirt.unix.manage") == 0 && subject.isInGroup("wheel")) {
+  polkit.log("RETURNING YES" + polkit.Result.YES);
+	return polkit.Result.YES
+  }
+});
+
