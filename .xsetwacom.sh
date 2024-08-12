@@ -23,7 +23,15 @@ if [[ -z $MAIN_MONITOR ]]; then
   MAIN_MONITOR=$(xrandr --listactivemonitors | sed -n "2{p;q}" | rev | cut -d' ' -f1 | rev)
 fi
 
-xsetwacom set "$STYLUS" MapToOutput $MAIN_MONITOR
+xsetwacom -v set "$STYLUS" MapToOutput $MAIN_MONITOR
+error=$?
+if [[ $error ]] then
+  notify-send --icon /usr/share/icons/gnome/256x256/devices/input-tablet.png Touchpad "Error configuring monitor for Touchpad! Trying with HEAD-N syntax"
+  display_number=$(echo $MAIN_MONITOR | grep -Eo '[0-9]+$')
+  MAIN_MONITOR=HEAD-$display_number
+  xsetwacom -v set "$STYLUS" MapToOutput $MAIN_MONITOR
+fi
+
 xsetwacom set "$STRIP" Button 1 "3"
 
 xsetwacom set "$PAD" "Button" "1" "key ctrl z" # Button 5
